@@ -1,38 +1,79 @@
-# feathers-chat
+# Description
 
 > 
 
-## About
+## Design
 
-This project uses [Feathers](http://feathersjs.com). An open source framework for building APIs and real-time applications.
-
-## Getting Started
-
-1. Make sure you have [NodeJS](https://nodejs.org/) and [npm](https://www.npmjs.com/) installed.
-2. Install your dependencies
+1. A product belongs to many shops and A shop stocks many products
 
     ```
-    cd path/to/feathers-chat
-    npm install
+    Many To Many
     ```
 
-3. Start your app
+3. A product belongs to One category but a category has many products
 
     ```
-    npm start
+    One To Many
     ```
 
-## Testing
+## Process for relations
 
-Run `npm test` and all your tests in the `test/` directory will be run.
+Define reference key in schema and add it to the QueryProperties and DataSchema as you would any other field
 
-## Scaffolding
+## Process for populating foreign object
 
-This app comes with a powerful command line interface for Feathers. Here are a few things it can do:
+If you defined a Type.Ref on one end of the relationshipno need to define it on the oposite side
+
+Define the resolvers on both side. E.g:
 
 ```
-$ npx feathers help                           # Show all commands
-$ npx feathers generate service               # Generate a new Service
+//products.schema.js
+export const productsResolver = resolve({
+    category: virtual(async (product, context) => {
+        return context.app.service('categories').get(product.categoryId);
+    }),
+    shops: virtual(async (product, context) => {
+        const {data} = await context.app.service('shops').find({
+            query: {
+                _id: {
+                    $in: product.shopIds || []
+                }
+            },
+        })
+        return data;
+    })
+})
+```
+
+
+```
+//shops.schema.js
+export const shopsResolver = resolve({
+    products: virtual(async (shop, context) => {
+        const {data} = await context.app.service('products').find({
+            query: {
+                _id: {$in: shop.productIds || []}
+            }
+        })
+        return data;
+    })
+})
+```
+
+```
+//categoryies.schema.js
+export const categoriesResolver = resolve({
+    products: virtual(async (category, context) => {
+        const {data} = await context.app.service('products').find({
+            query:  {
+                _id: {
+                    $in: category.productIds || []
+                }
+            },
+        })
+        return data;
+    })
+})
 ```
 
 ## Help
