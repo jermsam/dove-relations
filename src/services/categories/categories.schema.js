@@ -10,7 +10,7 @@ export const categoriesSchema = Type.Object(
     {
         _id: ObjectIdSchema(),
         name: Type.String(),
-        productIds: Type.Optional(Type.Array(Type.String())),
+        productIds: Type.Optional(Type.Array(ObjectIdSchema())),
         // products: Type.Array(Type.Ref(productsSchema))
     },
     {$id: 'Categories', additionalProperties: false}

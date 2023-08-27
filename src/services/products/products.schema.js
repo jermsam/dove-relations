@@ -11,9 +11,9 @@ export const productsSchema = Type.Object(
         _id: ObjectIdSchema(),
         name: Type.String(),
         price: Type.Number(),
-        categoryId: Type.String(),
+        categoryId: ObjectIdSchema(),
         category: Type.Ref(categoriesSchema),
-        shopIds: Type.Optional(Type.Array(Type.String())),
+        shopIds: Type.Optional(Type.Array(ObjectIdSchema())),
     },
     {$id: 'Products', additionalProperties: false}
 )
