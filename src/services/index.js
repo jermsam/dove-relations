@@ -1,3 +1,5 @@
+import { user } from './users/users.js'
+
 import { shops } from './shops/shops.js'
 
 import { products } from './products/products.js'
@@ -5,6 +7,8 @@ import { products } from './products/products.js'
 import { categories } from './categories/categories.js'
 
 export const services = (app) => {
+  app.configure(user)
+
   app.configure(shops)
 
   app.configure(products)
